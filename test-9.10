@@ -1,0 +1,170 @@
+/*有一仓库管理系统，需要对不同种类的商品编号、类型、名称、数量等信息进行管理。要求利用结构体变量记录每种商品的编号、类型、名称和数量，并建立单向链表来存放商品的信息。
+   功能实现要求如下：
+（1）写函数create()实现建立单链表来存放商品的信息。
+（2）写函数show()输出所有商品的信息。
+（3）按商品编号查找，如果找到了则修改商品的数量，否则输出“库存中不存在该商品”。
+（4）写函数释放链表所占内存空间
+
+其中结构体类型定义如下：
+struct goods
+{
+int num；            //商品编号
+    char type[20];       //商品类型
+    char name[20];       //商品名称
+    int  counts;         //商品数量
+    struct goods *next;
+};
+
+测试用例1如下：
+请依次输入每个商品编号、类型、名称、数量：
+1 衣服 连衣裙 20
+是否继续输入,按Y键继续输入，其他键就结束.
+Y
+请依次输入每个商品编号、类型、名称、数量：
+2 食品 豆干 30
+是否继续输入,按Y键继续输入，其他键就结束.
+Y
+请依次输入每个商品编号、类型、名称、数量：
+3 玩具 小熊 50
+是否继续输入,按Y键继续输入，其他键就结束.
+n
+输出所有商品信息为：编号 类型 名称 数量:
+1 衣服 连衣裙 20
+2 食品 豆干 30
+3 玩具 小熊 50
+请输入要修改商品的编号：
+2
+请重新输入该商品的数量 ：
+500
+修改后的商品：
+输出所有商品信息为：编号 类型 名称 数量:
+1 衣服 连衣裙 20
+2 食品 豆干 500
+3 玩具 小熊 50
+
+测试用例2如下所示：
+请依次输入每个商品编号、类型、名称、数量：
+1 衣服 连衣裙 20
+是否继续输入,按Y键继续输入，其他键就结束.
+Y
+请依次输入每个商品编号、类型、名称、数量：
+2 食品 豆干 30
+是否继续输入,按Y键继续输入，其他键就结束.
+Y
+请依次输入每个商品编号、类型、名称、数量：
+3 玩具 小熊 50
+是否继续输入,按Y键继续输入，其他键就结束.
+n
+输出所有商品信息为：编号 类型 名称 数量:
+1 衣服 连衣裙 20
+2 食品 豆干 30
+3 玩具 小熊 50
+请输入要修改商品的编号：
+4
+修改失败.
+库存中不存在该商品.
+
+
+输入信息提示："请依次输入每个商品编号、类型、名称、数量：\n" 
+输入格式： "%d %s %s %d" 
+输入信息提示："是否继续输入,按Y键继续输入，其他键就结束.\n"
+输出信息提示："输出所有商品信息为：编号 类型 名称 数量:\n"
+输出格式："%d %s %s %d\n"
+输入信息提示："请输入要修改商品的编号：\n"
+输入格式："%d"
+输入信息提示："请重新输入该商品的数量 ：\n"
+输入格式："%d"
+输出信息提示：如果不存在此商品则输出 ："修改失败.\n" "库存中不存在该商品.\n"
+                         如果找到了则输出："修改后的商品：\n"
+ 输出信息提示： "输出所有商品信息为：编号 类型 名称 数量:\n"
+输出格式："%d %s %s %d\n"*/
+#include<stdio.h>
+#include<stdlib.h>
+struct goods
+{
+    int num;            //商品编号
+    char type[20];       //商品类型
+    char name[20];       //商品名称
+    int  counts;         //商品数量
+    struct goods* next;
+};
+struct goods* creat()
+{
+    char s[10];
+    struct goods* H = (struct goods*)malloc(sizeof(struct goods));
+    struct goods* p, * r;
+    H->next = NULL;
+    r = H;
+    while (1)
+    {
+        p = (struct goods*)malloc(sizeof(struct goods));
+        printf("请依次输入每个商品编号、类型、名称、数量：\n");
+        scanf("%d%s%s%d", &(p->num), &(p->type), &(p->name), &(p->counts));
+        r->next = p;
+        p->next = NULL;
+        r = p;
+        printf("是否继续输入,按Y键继续输入，其他键就结束.\n");
+        scanf("%s", &s);
+        if (s[0] != 'Y')
+        {
+            return H;
+        }
+    }
+    return H;
+}
+void show(struct goods* H)
+{
+    struct goods* p;
+    printf("输出所有商品信息为：编号 类型 名称 数量 : \n");
+    p = H->next;
+    while (p)
+    {
+        printf("%d %s %s %d\n", p->num, p->type, p->name, p->counts);
+        p = p->next;
+    }
+}
+void Find(struct goods* H)
+{
+    int a, b;
+    struct goods* p;
+    printf("请输入要修改商品的编号：\n");
+    scanf("%d", &a);
+    p = H->next;
+    while (p)
+    {
+        if (p->num == a)
+        {
+            printf("请重新输入该商品的数量:\n");
+            scanf("%d", &b);
+            p->num = b;
+            printf("修改后的商品：\n");
+            return;
+        }
+        else p = p->next;
+    }
+    printf("修改失败.\n");
+    printf("库存中不存在该商品.\n");
+}
+void Free(struct goods* H)
+{
+    struct goods* p;
+    p = H;
+    while (p)
+    {
+        H->next = p->next;
+        free(p);
+        p = H->next;
+
+    }
+    free(H);
+}
+int main()
+{
+    struct gooods* H;
+    H = creat();
+    show(H);
+    Find(H);
+    show(H);
+    Free(H);
+    return 0;
+}
