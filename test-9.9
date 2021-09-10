@@ -1,0 +1,146 @@
+/*3.(20分) 用链表和结构体实现对图书信息进行存储、删除及显示功能，假设图书信息包括ID和书名属性。
+ 结构体类型定义如下：
+struct book {
+	char ID[10];  // 图书编号
+        char name[20]; //书名
+	struct book *next;
+};
+ （1）写函数创建单向链表并存储图书信息，输入ID和name按空格隔开，先输入ID后输入name，当ID为“0”时链表创建结束，并输出创建后的链表信息。
+ （2）写函数实现删除某一编号的图书，并输出删除结点后的链表信息。
+（3）写函数释放链表所占内存空间。
+ （在主函数依次调用各函数即可）
+程序运行示例1：
+输入图书的编号和书名：
+01 c
+02 c++
+03 java
+0  0
+创建的链表：
+01,c
+02,c++
+03,java
+请输入要删除图书的编号：
+02
+删除后的链表：
+01,c
+03,java
+
+程序运行示例2：
+输入图书的编号和书名：
+01 c
+02 c++
+03 java
+0 0
+创建的链表：
+01,c
+02,c++
+03,java
+请输入要删除图书的编号：
+04
+不存在！删除后的链表：
+01,c
+02,c++
+03,java
+
+输入提示："输入图书的编号和书名：\n"
+输入格式："%s %s"
+输出提示："创建的链表：\n"
+输出格式："%s,%s\n"
+输入提示："请输入要删除图书的编号：\n"
+输入格式：%s
+输出提示："删除后的链表：\n"
+输出格式："%s,%s\n"
+（如果没找到相应的图书编号，输出"不存在！")*/
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+struct book 
+{
+	char ID[10];  // 图书编号
+	char name[20]; //书名
+	struct book* next;
+}book;
+//创建数据
+struct book* CreateList()
+{
+	struct book* p,*H,*r;
+	H = (struct book*)malloc(sizeof(book));
+	H->next = NULL;
+	r = H;
+	while(1)
+	{
+		p = (struct book*)malloc(sizeof(book));
+		printf("输入图书的编号和书名：\n");
+		scanf("%s%s", p->ID, p->name);
+		if (strcmp(p->ID, "0") == 0)
+			break;
+		r->next = p;
+		p->next = NULL;
+		r = p;
+	}
+	return H;
+}
+//打印数据
+void TavelList(struct book*H)
+{
+	struct book* p;
+	p = H->next;
+	while (p)
+	{
+		printf("%s %s\n", p->ID, p->name);
+		p = p->next;
+	}
+
+}
+//删数据
+void DeleteNode(struct book*H)
+{
+	struct book* p,*q;
+	char r[10];
+	p = H;
+	printf("请输入要删除的图书的编号：\n");
+	scanf("%s",r);
+	while (p->next)
+	{
+		if (strcmp((p->next->ID), r) == 0)
+			break;
+		else
+		p = p->next;
+	}
+	if (p->next == NULL)
+		printf("该编号不存在\n");
+	else
+	{
+		q = p->next;
+		p->next = q->next;
+		free(q);
+	}
+}
+//释放空间
+void DestroyList(struct book* H)
+{
+	struct book* p;
+	p = H->next;
+	while (H->next)
+	{
+		H->next = p->next;
+		free(p);
+	}
+	free(H);
+}
+int main()
+{
+	struct book* H;
+	int d;
+
+	H = CreateList();
+	printf("创建的链表：\n");
+	TavelList(H);
+
+	DeleteNode(H);
+	printf("删除后的链表：\n");
+	TavelList(H);
+
+	DestroyList(H);
+	return 0;
+}
