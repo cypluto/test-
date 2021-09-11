@@ -1,0 +1,163 @@
+/*为了对班级学生的基本信息和C语言程序设计成绩进行管理，利用结构体变量记录每个学生的学号和C程序设计成绩。先根据用户输入的人数建立单向链表来存放学生的信息，然后输出各个学生的信息，分别用自定义函数实现如下功能：
+（1）写函数creat(),使其建立单链表来存放学生的信息及输出各学生的信息；
+（2）写函数delete(),按学号检索学生信息，如果找到，则删除该学生信息，并输出删除过后的所有学生信息，否则输出“该学生不存在”。
+（3）写函数输出链表中的结点。
+（4）释放链表所占内存空间。
+
+struct student{
+    int id;          //学生学号
+    int score;          //考试成绩
+    struct student *next;
+};
+
+输入和输出格式：
+输入信息提示："请输入班级人数：\n"
+输入格式："%d"
+输入提示信息："请依次输入每个学生的学号 成绩\n"
+输入提示信息："请输入第%d个学生的成绩信息：\n"
+输入格式："%d %d"
+输出提示信息："学生的成绩信息为：\n"
+输出提示信息："id score\n"
+输出的格式为："%d %d\n"
+输入提示信息："请输入需要删除成绩信息的学号：\n"
+输入格式为："%d"
+如果存在，输出提示信息："删除成功！\n" 然后输出删除以后的结果，格式为："%d %d\n"
+如果不存在，输出提示信息："不存在！"
+
+测试用例1：
+请输入班级人数：
+5
+请依次输入每个学生的学号 成绩
+请输入第1个学生的成绩信息：
+2 65
+请输入第2个学生的成绩信息：
+1 70
+请输入第3个学生的成绩信息：
+5 83
+请输入第4个学生的成绩信息：
+3 63
+请输入第5个学生的成绩信息：
+4 90
+学生的成绩信息为：
+id score
+2 65
+1 70
+5 83
+3 63
+4 90
+请输入需要删除成绩信息的学号：
+1
+删除成功！
+2 65
+5 83
+3 63
+4 90
+
+测试用例2：
+请输入班级人数：
+5
+请依次输入每个学生的学号 成绩
+请输入第1个学生的成绩信息：
+1 23
+请输入第2个学生的成绩信息：
+2 45
+请输入第3个学生的成绩信息：
+3 67
+请输入第4个学生的成绩信息：
+4 76
+请输入第5个学生的成绩信息：
+5 89
+学生的成绩信息为：
+id score
+1 23
+2 45
+3 67
+4 76
+5 89
+请输入需要删除成绩信息的学号：
+6
+不存在！*/
+#include<stdio.h>
+#include<stdlib.h>
+struct student {
+    int id;          //学生学号
+    int score;          //考试成绩
+    struct student* next;
+};
+struct student* creat()
+{
+    int n,i;
+    struct student* H, * p,*r;
+    H = (struct student*)malloc(sizeof(struct student));
+    H->next = NULL;
+    r = H;
+    printf("请输入班级人数：\n");
+    scanf("%d", &n);
+    printf("请依次输入每个学生的学号 成绩\n");
+    for (i = 0; i < n; i++)
+    {
+        p = (struct student*)malloc(sizeof(struct student));
+        printf("请输入第%d个学生的成绩信息：\n", i + 1);
+        scanf("%d%d", &(p->id), &(p->score));
+        p->next = NULL;
+        r->next = p;
+        r = p;
+    }
+    r = H->next;
+    printf("学生的成绩信息为：\n");
+    printf("id score\n");
+    while (r)
+    {
+        printf("%d %d\n", r->id, r->score);
+        r = r->next;
+    }
+    return H;
+}
+int delete(struct student* H)
+{/*
+    输入提示信息："请输入需要删除成绩信息的学号：\n"
+        输入格式为："%d"
+        如果存在，输出提示信息："删除成功！\n" 然后输出删除以后的结果，格式为："%d %d\n"
+        如果不存在，输出提示信息："不存在！*/
+    struct student* p,*r;
+    int n;
+    printf("请输入需要删除成绩信息的学号：\n");
+    scanf("%d", &n);
+    p = H;
+    while (p->next)
+    {
+        if (p->next->id == n)
+        {
+            r = p->next;
+            p->next = r->next;
+            free(r);
+            printf("删除成功！\n");
+            return 1;
+        }
+        p = p->next;
+    }
+    printf("不存在！\n");
+    return 0;
+}
+Print(struct student* H)
+{
+    struct student* p;
+    p = H->next;
+    while (p)
+    {
+        printf("%d %d\n", p->id, p->score);
+        p = p->next;
+    }
+}
+int main()
+{
+    struct student* H;
+    int ret;
+    H = creat();
+    ret=delete(H);
+    if (ret == 1)
+    {
+        Print(H);
+    }
+    return 0;
+}
