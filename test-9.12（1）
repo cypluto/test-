@@ -1,0 +1,152 @@
+/*为了对班级学生的基本信息和C语言程序设计成绩进行管理，利用结构体变量记录每个学生的学号、姓名和C程序设计成绩。先根据用户输入的人数建立单向链表来存放学生的信息，然后输出各个学生的信息到stu.txt文件中，分别用自定义函数实现如下功能：
+（1）写函数实现建立单链表来存放学生的信息；
+（2）写函数实现对学生的成绩进行从高到低排序。
+（3）写函数将排序后的学生信息依次输出到stu.txt文件中；
+（4）写函数按学号检索学生信息，如果找到，则输出该学生相关信息，否则输出“找不到”。
+（5）写函数释放链表所占空间。
+结构体类型定义如下：
+struct student{
+    int id;          //学生学号
+    char name[20];     //学生姓名
+    int score;          //考试成绩
+    struct student *next;
+};
+程序运行结果示例：
+请输入班级人数：
+3
+请依次输入每个学生的学号 姓名 成绩
+请输入第1个学生的信息：
+1 zhanghua 54
+请输入第2个学生的信息：
+2  lisi   78
+请输入第3个学生的信息：
+3 zhaowu   67
+请输入要查找学生编号：
+4
+找不到
+
+stu.txt文件内容格式如下：
+id   name  score
+2     lisi   78
+3     zhaowu   67
+1     zhanghua   54
+
+输入信息提示："请输入班级人数：\n"
+输入格式：%d
+输入信息提示："请依次输入每个学生的学号 姓名 成绩\n"
+        "请输入第%d个学生的信息：\n"
+输入格式："%d %s %d"
+输入信息提示："请输入要查找学生编号：\n"
+输入格式：%d
+查找输出信息提示："该学生的学号为：%d  姓名：%s  成绩为：%d" 或 "找不到"
+写入文件信息提示："id   name  score\n"
+写入文件格式："%d     %s   %d\n"*/
+#include<stdio.h>
+#include<stdlib.h>
+struct student {
+    int id;          //学生学号
+    char name[20];     //学生姓名
+    int score;          //考试成绩
+    struct student* next;
+};
+struct student* creatList()
+{
+    int n, i;
+    struct student* H, * p, * r;
+    H = (struct student*)malloc(sizeof(struct student));
+    H->next = NULL;
+    r = H;
+    printf("请输入班级人数：\n");
+    scanf("%d", &n);
+    printf("请依次输入每个学生的学号 姓名 成绩\n");
+    for (i = 0; i < n; i++)
+    {
+        p = (struct student*)malloc(sizeof(struct student));
+        printf("请输入第 % d个学生的信息：\n", i + 1);
+        scanf("%d%s%d", &(p->id), &(p->name), &(p->score));
+        p->next = NULL;
+        r->next = p;
+        r = p;
+    }
+    return H;
+}
+//对成绩排序
+void fun(struct student* H)
+{
+    struct student* p, * r, * q;
+    p = H->next;
+    while (p)
+    {
+        q = p->next;
+        while (q)
+        {
+            if (p->score < q->score)
+            {
+                r = p, p = q, q = r;
+            }
+            q = q->next;
+        }
+        p = p->next;
+    }
+}
+//把信息输入进文件
+void Fun(struct student*H)
+{
+    struct student* p;
+    FILE* pf = fopen("stu.txt", "w");
+    if (pf == NULL)
+    {
+        return;
+    }
+    p = H->next;
+    fprintf(pf, "id name  score\n");
+    while (p)
+    {
+        fprintf(pf, "%d %s %d\n", p->id, p->name, p->score);
+        p = p->next;
+    }
+    fclose(pf);
+    pf = NULL;
+}
+//通过编号查找学生信息
+void Find(struct student* H)
+{
+    struct student* p;
+    int n;
+    printf("请输入要查找的学生编号:\n");
+    scanf("%d", &n);
+    p=H->next;
+    while (p)
+    {
+        if (n == p->id)
+        {
+            printf("id name score\n");
+            printf("%d  %s    %d", p->id, p->name, p->score);
+            return;
+        }
+        p = p->next;
+    }
+    printf("找不到\n");
+}
+void Free(struct student* H)
+{
+    struct student* p;
+    p = H->next;
+    while (p)
+    {
+        H->next = p->next;
+        free(p);
+        p = H->next;
+    }
+    free(H);
+}
+int main()
+{
+    struct student* H;
+    H = creatList();
+    fun( H);
+    Fun(H);
+    Find(H);
+    free(H);
+    return 0;
+}
