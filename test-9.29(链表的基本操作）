@@ -1,0 +1,120 @@
+#include<stdio.h>
+#include<stdlib.h>
+typedef struct Node
+{
+	int data;
+	struct Node* next;
+}Node;
+//由i控制输入数据的个数
+Node* CreatList()
+{
+	int i = 0; 
+	Node* p, * H, * r;
+	H = (Node*)malloc(sizeof(Node));
+	H->next = NULL;
+	r = H;
+	printf("请输入数据\n");
+	while (i++<3)
+	{
+		p = (Node*)malloc(sizeof(Node));
+		scanf("%d", &p->data);
+		r->next = p;
+		p->next = NULL;
+		r = p;
+	}
+	return H;
+}
+void Put(Node* H)
+{
+	Node* p;
+	p = H->next;
+	while (p)
+	{
+		printf("%4d", p->data);
+		p = p->next;
+	}
+	printf("\n");
+}
+void Delete(Node* H)
+{
+	Node* p, * r;
+	p = H->next;
+	while (p->next)
+	{
+		r = p->next;
+		while(p->data==r->data)
+		{
+			p->next = r->next;
+			free(r);
+			if (p->next != NULL)
+				r = p->next;
+			else
+				goto end;
+		}
+		p = p->next;
+	}
+end:;
+}
+//找出两链表相等的元素
+Node* Fun(Node* m, Node* n)
+{
+	Node* H = (Node*)malloc(sizeof(Node));
+	Node* p,*q=n,*r;
+	H->next = NULL;
+	r = H;
+	while (m->next)
+	{
+		while (q->next)
+		{
+			if (m->next->data == q->next->data)
+			{
+				p = (Node*)malloc(sizeof(Node));
+				p->next = NULL;
+				p->data = m->next->data;
+				r->next = p;
+				r = p;
+			}
+			q = q->next;
+		}
+		m = m->next;
+		q = n;
+	}
+	return H;
+}
+//删除A链表中与两链表中相同的元素
+void PPut(Node* H, Node* r)
+{
+	Node* p=H, * q=r,*m;
+	while (q->next)
+	{
+		while (p->next)
+		{
+			if (p->next->data == q->next->data)
+			{
+				m = p->next;
+				p->next = m->next;
+				free(m);
+				if (p->next == NULL)
+				{
+					break;
+				}
+			}
+			p = p->next;
+		}
+		q = q->next;
+		p = H;
+	}
+}
+int main()
+{
+	Node*H,*m,*n,*r;
+	H = CreatList();
+	m = CreatList();
+	n = CreatList();
+	Delete(m);
+	Delete(n);
+	r = Fun(m, n);
+	PPut(H,r);
+	Put(H);
+	return 0;
+}
