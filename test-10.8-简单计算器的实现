@@ -1,0 +1,211 @@
+//该计算器只能计算一位数的加减乘除并且结果偶尔出错
+#define _CRT_SECURE_NO_DEPRECATE
+
+#include<stdio.h>
+#include<stdlib.h>
+#define MAXSIZE 1024
+
+
+typedef char ElemType;
+
+typedef int Elemtype;
+typedef struct
+{
+	Elemtype top;
+	char data[MAXSIZE];
+	int priority;//优先级
+}SeqStack;
+typedef struct
+{
+	Elemtype top;
+	double  data[MAXSIZE];
+}SeqStack1;
+//初始化栈(字符）
+void InitStack(SeqStack* stack)
+{
+	stack->top = -1;
+	stack->priority = -1;
+}
+//初始化栈(数)
+void InitStack1(SeqStack1* stack)
+{
+	stack->top = -1;
+}
+
+//判断栈是否为空
+int Isempty(SeqStack* stack)
+{
+	if (stack->top == -1)
+		return 0;
+	return 1;
+}
+
+//返回栈顶元素
+ElemType SeqStack_Top(SeqStack* stack)
+{
+	if (Isempty(stack))
+		return stack->data[stack->top];
+	return 0;
+}
+
+//弹出栈顶元素(字符串）
+ElemType  SeqStack_Pop(SeqStack* stack)
+{
+	if (Isempty(stack))
+	{
+		stack->priority = priority(stack->data[stack->top-1]);
+		return stack->data[stack->top--];
+	}
+	return ;
+}
+//弹出栈顶元素（数）
+double  SeqStack_Pop1(SeqStack1* stack)
+{
+	if (Isempty(stack))
+	{
+		return stack->data[stack->top--];
+	}
+	return;
+}
+//字符串入栈
+void Stack_Push(SeqStack* stack, ElemType vue, int c)
+{
+	if (stack->top >= MAXSIZE - 1)        //栈满 
+		return;
+	stack->top++;
+	stack->data[stack->top] = vue;
+	stack->priority = c;
+}
+//数入栈
+void Stack_Push1(SeqStack1* stack, double vue)
+{
+	if (stack->top >= MAXSIZE - 1)        //栈满 
+		return;
+	stack->top++;
+	stack->data[stack->top] = vue;
+}
+
+//销毁栈
+void Stack_Cleer(SeqStack* stack)
+{
+	if (Isempty(stack))
+		free(stack);
+}
+
+//判断字符是运算符还是数字
+int judge_char(char c)
+{
+	if (c >= '0' && c <= '9')
+		return 1;
+	//数字返回1
+	else
+		return 0;
+	//运算符返回0
+}
+//区分运算符优先级
+int priority(char c)
+{
+	switch (c)
+	{
+	case '+':
+	case'-':
+		return 2;
+	case'*':
+	case'/':
+		return 4;
+	case'(':
+		return 1;
+	case')':
+		return 0;
+	default:
+		return -1;
+	}
+}
+//计算式子
+double calculate(double x, double y, char c)
+{
+	switch (c)
+	{
+	case'-':
+		return x - y; 
+	case'+':
+		return x + y;
+	case'*':
+		return x * y;
+	case'/':
+		return x / y;
+	}
+}
+int main()
+{
+	char a[MAXSIZE] = { 0 }, c[MAXSIZE] = { 0 };
+	SeqStack s ;
+	SeqStack1 h;
+	int n,i=0,j=0,k;
+	double  x,y,temp;
+	printf("请输入中缀表达式：\n");
+	scanf("%s", &c);
+	n = strlen(c);
+	InitStack(&s);
+	InitStack1(&h);
+	//转化为后缀表达式
+	if (c[0] == '-')
+	{
+		for (i = n - 1; i >= 0; i--)
+			c[i + 3] = c[i];
+		c[0] = '(';
+		c[1] = '0';
+		c[2] = c[3];
+		c[3] = c[4];
+		c[4] = ')';
+	}
+	n = strlen(c);
+	for (i=0; i < n; i++)
+	{
+		if (judge_char(c[i]) == 1)
+		{
+			a[j++] = c[i];
+			continue;
+		}
+		if (priority(c[i]) == 1)
+			goto there;
+		if (priority(c[i]) == 0)
+		{
+			while (s.priority != 1)
+			{
+				a[j++] = SeqStack_Pop(&s);
+			}
+			SeqStack_Pop(&s);
+			continue;
+		}
+		while (priority(c[i]) <= s.priority)
+		{
+			a[j++]=SeqStack_Pop(&s);
+		}
+	there:
+		Stack_Push(&s, c[i], priority(c[i]));
+	}
+	while (Isempty(&s))
+	{
+		a[j++] = SeqStack_Pop(&s);
+	}
+	n = strlen(a);
+	for (i = 0; i < n; i++)
+	{
+		if (judge_char(a[i]) == 1)
+		{
+			temp = a[i] - '0';
+			Stack_Push1(&h, temp);
+		}
+		if (judge_char(a[i]) == 0)
+		{
+			y=SeqStack_Pop1(&h);
+			x = SeqStack_Pop1(&h);
+			temp=calculate(x, y, a[i]);
+			Stack_Push1(&h, temp);
+		}
+	}
+	temp = SeqStack_Pop1(&h);
+	printf("结果为：%lf\n", temp);
+	return 0;
+}
